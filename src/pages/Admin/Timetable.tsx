@@ -308,7 +308,7 @@ export default function Timetable() {
             <p className="text-gray-500 mt-2">Choose a grade from the dropdown above to see the weekly timetable.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-6">
             {days.map(day => {
               let dayClasses = timetable
                 .filter(t => t.grade === formData.grade && t.day === day)
