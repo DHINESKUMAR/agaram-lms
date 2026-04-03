@@ -428,21 +428,48 @@ useEffect(() => {
 
   if (activeMeetingUrl) {
     return (
-      <div className="fixed inset-0 z-[9999] bg-black flex flex-col">
+      <div className="fixed inset-0 z-[9999] bg-black flex flex-col" id="zoom-container">
         <div className="bg-gray-900 text-white p-4 flex justify-between items-center">
           <h2 className="text-lg font-bold flex items-center">
             <Video size={20} className="mr-2 text-blue-400" />
             Live Class
           </h2>
-          <button 
-            onClick={() => setActiveMeetingUrl(null)}
-            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md font-medium flex items-center"
-          >
-            <LogOut size={18} className="mr-2" />
-            Leave Class
-          </button>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={async () => {
+                try {
+                  const elem = document.getElementById('zoom-container');
+                  if (elem && !document.fullscreenElement) {
+                    await elem.requestFullscreen();
+                  }
+                  if (window.screen && window.screen.orientation && window.screen.orientation.lock) {
+                    await window.screen.orientation.lock('landscape');
+                  }
+                } catch (err) {
+                  console.error("Rotation failed:", err);
+                }
+              }}
+              className="bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-md font-medium flex items-center"
+              title="Rotate Screen"
+            >
+              <Maximize size={18} />
+            </button>
+            <button 
+              onClick={() => {
+                if (document.fullscreenElement) {
+                  document.exitFullscreen().catch(err => console.error(err));
+                }
+                setActiveMeetingUrl(null);
+              }}
+              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md font-medium flex items-center"
+            >
+              <LogOut size={18} className="mr-2" />
+              Leave Class
+            </button>
+          </div>
         </div>
-        <div className="flex-1 w-full h-full">
+        {/* Added pb-12 to push the Zoom toolbar up so it doesn't overlap with mobile system navigation */}
+        <div className="flex-1 w-full h-full pb-12 bg-black">
           <iframe 
             src={activeMeetingUrl} 
             className="w-full h-full border-none"
@@ -453,7 +480,6 @@ useEffect(() => {
       </div>
     );
   }
-
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans relative">
       <PopupAnnouncement userRole="Students" />
