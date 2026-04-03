@@ -550,13 +550,17 @@ export default function Chatbot() {
 
   return (
     <>
-      {/* Floating Button */}
-      <button
+    {/* Floating Button */}
+      <motion.button
+        drag
+        dragMomentum={false}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(true)}
-        className={`fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-2xl transition-transform hover:scale-105 z-40 flex items-center justify-center ${isOpen ? 'hidden' : 'flex'}`}
+        className={`fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-2xl z-40 flex items-center justify-center cursor-grab active:cursor-grabbing ${isOpen ? 'hidden' : 'flex'}`}
       >
         <MessageSquare size={28} />
-      </button>
+      </motion.button>
 
       {/* Chat Window */}
       <AnimatePresence>
