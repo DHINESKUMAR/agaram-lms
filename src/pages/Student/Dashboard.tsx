@@ -1584,7 +1584,7 @@ export default function StudentDashboard() {
       </main>
 
       {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex justify-around p-2 pb-safe shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.05)] z-40">
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex justify-around p-2 pb-6 shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.05)] z-40">
         {navItems.map((item) => (
           <button
             key={item.id}
