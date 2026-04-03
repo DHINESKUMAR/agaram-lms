@@ -27,7 +27,8 @@ import {
   Play,
   ExternalLink,
   Award,
-  QrCode
+  QrCode,
+  Maximize
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import WhatsAppIcon from "../../components/WhatsAppIcon";
@@ -343,8 +344,7 @@ export default function StudentDashboard() {
     const date = new Date(parseInt(year), parseInt(month) - 1, 1);
     return date.toLocaleString('default', { month: 'long', year: 'numeric' });
   };
-
-  const handleJoinClass = async (linkUrl: string | null) => {
+const handleJoinClass = async (linkUrl: string | null) => {
     // Check if zoom is blocked due to unpaid fees
     if (currentStudentData?.zoomBlocked) {
       alert("கட்டணம் செலுத்திய பின் தொடரவும் (Please pay the fee to continue)");
@@ -376,7 +376,9 @@ export default function StudentDashboard() {
           const urlParts = new URL(linkUrl);
           const meetingId = urlParts.pathname.split('/j/')[1];
           const pwd = urlParts.searchParams.get('pwd');
-          finalUrl = `https://zoom.us/wc/join/${meetingId}${pwd ? `?pwd=${pwd}` : ''}`;
+          // Base64 encode the student name to auto-fill the "Your Name" field in Zoom Web Client
+          const encodedName = btoa(unescape(encodeURIComponent(studentData.name)));
+          finalUrl = `https://zoom.us/wc/join/${meetingId}?pwd=${pwd || ''}&un=${encodedName}&prefer=1`;
         }
       } catch (e) {
         console.error("Error formatting zoom link", e);
@@ -388,7 +390,6 @@ export default function StudentDashboard() {
       alert("Attendance Marked Successfully!");
     }
   };
-
   const navItems = [
     { id: "profile", name: "Profile", icon: <User size={24} /> },
     { id: "home", name: "Home", icon: <Home size={24} /> },
@@ -398,6 +399,28 @@ export default function StudentDashboard() {
     { id: "fees", name: "Fees", icon: <DollarSign size={24} /> },
     { id: "website", name: "Website", icon: <Globe size={24} /> },
   ];
+useEffect(() => {
+    let wakeLock: any = null;
+    const requestWakeLock = async () => {
+      try {
+        if ('wakeLock' in navigator) {
+          wakeLock = await (navigator as any).wakeLock.request('screen');
+        }
+      } catch (err) {
+        console.error("Wake Lock error:", err);
+      }
+    };
+    
+    if (activeMeetingUrl) {
+      requestWakeLock();
+    }
+    
+    return () => {
+      if (wakeLock) {
+        wakeLock.release().catch(console.error);
+      }
+    };
+  }, [activeMeetingUrl]);
 
   if (!studentData) {
     return null;
