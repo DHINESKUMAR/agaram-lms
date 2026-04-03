@@ -377,8 +377,8 @@ const handleJoinClass = async (linkUrl: string | null) => {
           const pwd = urlParts.searchParams.get('pwd');
           // Base64 encode the student name to auto-fill the "Your Name" field in Zoom Web Client
           const encodedName = btoa(unescape(encodeURIComponent(studentData.name)));
-          // Use the wc/join path with prefer=1 to bypass the meeting info screen if possible
-          finalUrl = `https://zoom.us/wc/${meetingId}/join?prefer=1&un=${encodedName}${pwd ? `&pwd=${pwd}` : ''}`;
+          // Use the standard wc/join path which handles passcodes better
+          finalUrl = `https://zoom.us/wc/join/${meetingId}?prefer=1&un=${encodedName}${pwd ? `&pwd=${pwd}` : ''}`;
         } else if (linkUrl.includes('zoom.us/wc/join/')) {
           // If it's already a wc/join link, try to append the name
           const urlParts = new URL(linkUrl);
@@ -386,6 +386,13 @@ const handleJoinClass = async (linkUrl: string | null) => {
           if (!urlParts.searchParams.has('un')) {
             finalUrl = `${linkUrl}${linkUrl.includes('?') ? '&' : '?'}un=${encodedName}&prefer=1`;
           }
+        } else if (linkUrl.includes('zoom.us/wc/')) {
+          // Handle other wc formats
+          const urlParts = new URL(linkUrl);
+          const meetingId = urlParts.pathname.split('/wc/')[1].split('/')[0];
+          const pwd = urlParts.searchParams.get('pwd');
+          const encodedName = btoa(unescape(encodeURIComponent(studentData.name)));
+          finalUrl = `https://zoom.us/wc/join/${meetingId}?prefer=1&un=${encodedName}${pwd ? `&pwd=${pwd}` : ''}`;
         }
       } catch (e) {
         console.error("Error formatting zoom link", e);
