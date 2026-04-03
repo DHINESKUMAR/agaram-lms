@@ -1583,28 +1583,32 @@ export default function StudentDashboard() {
         )}
       </main>
 
-      {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex justify-around p-2 pb-6 shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.05)] z-40">
-        {navItems.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => {
-              if (item.id === "website") {
-                window.open("https://agaramdhines.lk", "_blank");
-              } else {
-                setActiveTab(item.id);
-              }
-            }}
-            className={`flex flex-col items-center p-2 rounded-xl transition-all duration-200 ${
-              activeTab === item.id
-                ? "text-indigo-600 bg-indigo-50 -translate-y-1"
-                : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
-            }`}
-          >
-            {item.icon}
-            <span className={`text-[10px] mt-1 ${activeTab === item.id ? 'font-bold' : 'font-medium'}`}>{item.name}</span>
-          </button>
-        ))}
+     {/* Bottom Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 flex flex-col">
+        <div className="bg-white border-t border-slate-200 flex justify-around p-2 shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.05)]">
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => {
+                if (item.id === "website") {
+                  window.open("https://agaramdhines.lk", "_blank");
+                } else {
+                  setActiveTab(item.id);
+                }
+              }}
+              className={`flex flex-col items-center p-2 rounded-xl transition-all duration-200 ${
+                activeTab === item.id
+                  ? "text-indigo-600 bg-indigo-50 -translate-y-1"
+                  : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
+              }`}
+            >
+              {item.icon}
+              <span className={`text-[10px] mt-1 ${activeTab === item.id ? 'font-bold' : 'font-medium'}`}>{item.name}</span>
+            </button>
+          ))}
+        </div>
+        {/* Mobile System Navigation Bar Area */}
+        <div className="bg-gray-100 h-6 md:hidden w-full"></div>
       </div>
 
       {/* Hidden Templates for Download */}
