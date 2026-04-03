@@ -446,25 +446,57 @@ useEffect(() => {
               onClick={async () => {
                 try {
                   const elem = document.getElementById('zoom-container');
-                  if (elem && !document.fullscreenElement) {
-                    await elem.requestFullscreen();
+                  if (elem) {
+                    if (!document.fullscreenElement) {
+                      if (elem.requestFullscreen) {
+                        await elem.requestFullscreen();
+                      } else if ((elem as any).webkitRequestFullscreen) { /* Safari */
+                        await (elem as any).webkitRequestFullscreen();
+                      } else if ((elem as any).msRequestFullscreen) { /* IE11 */
+                        await (elem as any).msRequestFullscreen();
+                      }
+                    } else {
+                      if (document.exitFullscreen) {
+                        await document.exitFullscreen();
+                      } else if ((document as any).webkitExitFullscreen) { /* Safari */
+                        await (document as any).webkitExitFullscreen();
+                      } else if ((document as any).msExitFullscreen) { /* IE11 */
+                        await (document as any).msExitFullscreen();
+                      }
+                    }
                   }
+                  
+                  // Try to lock orientation if supported
                   if (window.screen && window.screen.orientation && window.screen.orientation.lock) {
-                    await window.screen.orientation.lock('landscape');
+                    if (!document.fullscreenElement) {
+                      await window.screen.orientation.lock('landscape');
+                    } else {
+                      window.screen.orientation.unlock();
+                    }
                   }
                 } catch (err) {
-                  console.error("Rotation failed:", err);
+                  console.error("Rotation/Fullscreen failed:", err);
+                  // Fallback for iOS/Safari which often blocks orientation lock
+                  alert("Please rotate your device physically to view in landscape mode.");
                 }
               }}
-              className="bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-md font-medium flex items-center"
-              title="Rotate Screen"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md font-medium flex items-center gap-1.5"
+              title="Rotate Screen / Fullscreen"
             >
-              <Maximize size={18} />
+              <RotateCw size={18} />
+              <span className="hidden sm:inline">Rotate</span>
             </button>
             <button 
               onClick={() => {
                 if (document.fullscreenElement) {
-                  document.exitFullscreen().catch(err => console.error(err));
+                  if (document.exitFullscreen) {
+                    document.exitFullscreen().catch(err => console.error(err));
+                  } else if ((document as any).webkitExitFullscreen) {
+                    (document as any).webkitExitFullscreen().catch((err: any) => console.error(err));
+                  }
+                }
+                if (window.screen && window.screen.orientation && window.screen.orientation.unlock) {
+                  window.screen.orientation.unlock();
                 }
                 setActiveMeetingUrl(null);
               }}
