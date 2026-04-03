@@ -368,8 +368,7 @@ const handleJoinClass = async (linkUrl: string | null) => {
       setAttendance([...attendance, { id: Date.now().toString() + studentData.id, studentId: studentData.id, date: today, status: "Present" }]);
     }
     
-    if (linkUrl) {
-      // Try to format standard zoom links for web client to work in iframe
+    // Try to format standard zoom links for web client to work in iframe
       let finalUrl = linkUrl;
       try {
         if (linkUrl.includes('zoom.us/j/')) {
@@ -378,7 +377,15 @@ const handleJoinClass = async (linkUrl: string | null) => {
           const pwd = urlParts.searchParams.get('pwd');
           // Base64 encode the student name to auto-fill the "Your Name" field in Zoom Web Client
           const encodedName = btoa(unescape(encodeURIComponent(studentData.name)));
-          finalUrl = `https://zoom.us/wc/join/${meetingId}?pwd=${pwd || ''}&un=${encodedName}&prefer=1`;
+          // Use the wc/join path with prefer=1 to bypass the meeting info screen if possible
+          finalUrl = `https://zoom.us/wc/${meetingId}/join?prefer=1&un=${encodedName}${pwd ? `&pwd=${pwd}` : ''}`;
+        } else if (linkUrl.includes('zoom.us/wc/join/')) {
+          // If it's already a wc/join link, try to append the name
+          const urlParts = new URL(linkUrl);
+          const encodedName = btoa(unescape(encodeURIComponent(studentData.name)));
+          if (!urlParts.searchParams.has('un')) {
+            finalUrl = `${linkUrl}${linkUrl.includes('?') ? '&' : '?'}un=${encodedName}&prefer=1`;
+          }
         }
       } catch (e) {
         console.error("Error formatting zoom link", e);
