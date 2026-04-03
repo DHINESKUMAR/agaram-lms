@@ -795,16 +795,21 @@ export default function Home() {
       </footer>
 
       {/* Contact Floating Button (Left Side) */}
-      <a 
+      {/* Contact Floating Button (Left Side) */}
+      <motion.a 
+        drag
+        dragMomentum={false}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
         href="https://wa.me/94778054232"
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-6 left-6 z-50 bg-[#25D366] text-white px-5 py-3 rounded-full shadow-lg hover:bg-[#128C7E] transition-transform hover:scale-105 flex items-center justify-center gap-2 font-bold"
+        className="fixed bottom-6 left-6 z-50 bg-[#25D366] text-white px-5 py-3 rounded-full shadow-lg hover:bg-[#128C7E] flex items-center justify-center gap-2 font-bold cursor-grab active:cursor-grabbing"
         title="Contact on WhatsApp"
       >
         <Phone size={24} />
         <span>WhatsApp</span>
-      </a>
+      </motion.a>
 
       {/* Chatbot (Right Side) */}
       <Chatbot />
