@@ -114,8 +114,10 @@ export default function Home() {
 
     try {
       const email = `${username}@agaram.com`;
+      // 1. Authenticate with Firebase
       await signInWithEmailAndPassword(auth, email, password);
       
+      // 2. Fetch student details from Database
       const students = await getStudents();
       const student = students.find((s: any) => s.username === username);
 
@@ -136,7 +138,9 @@ export default function Home() {
         localStorage.setItem('userSession', JSON.stringify(studentData));
         navigate("/student-dashboard", { state: studentData });
       } else {
-        alert("Student record not found in database.");
+        // If authenticated but not in database
+        alert("Student record not found in database. Please contact admin.");
+        auth.signOut(); // Sign out the user since they don't have a valid record
       }
     } catch (error: any) {
       console.error("Student Login Error:", error);
