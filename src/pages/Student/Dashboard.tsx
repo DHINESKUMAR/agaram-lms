@@ -474,13 +474,14 @@ useEffect(() => {
                   }
                   
                   // Try to lock orientation if supported
-                  if (window.screen && window.screen.orientation && window.screen.orientation.lock) {
-                    if (!document.fullscreenElement) {
-                      await window.screen.orientation.lock('landscape');
-                    } else {
-                      window.screen.orientation.unlock();
-                    }
-                  }
+const screenOrientation: any = window.screen && window.screen.orientation;
+if (screenOrientation && screenOrientation.lock) {
+  if (!document.fullscreenElement) {
+    await screenOrientation.lock('landscape');
+  } else {
+    screenOrientation.unlock();
+  }
+}
                 } catch (err) {
                   console.error("Rotation/Fullscreen failed:", err);
                   // Fallback for iOS/Safari which often blocks orientation lock
