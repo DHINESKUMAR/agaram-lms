@@ -218,7 +218,21 @@ export const getPasswordRequests = () => getData('passwordRequests', []);
 export const savePasswordRequests = (requests: any) => saveData('passwordRequests', requests);
 
 export const getStudents = () => getData('students', []);
-export const saveStudents = (students: any) => saveData('students', students);
+export const saveStudents = async (students: any) => {
+  await saveData('students', students);
+  if (isFirebaseConfigured) {
+    try {
+      // Save each student individually to avoid batch size limits
+      const promises = students.map((student: any) => {
+        const docRef = doc(collection(db, 'students'), student.id);
+        return setDoc(docRef, student);
+      });
+      await Promise.all(promises);
+    } catch (error) {
+      console.error("Firebase error saving students individually:", error);
+    }
+  }
+};
 
 export const getZoomLinks = async () => {
   const links = await getData('zoomLinks', []);
