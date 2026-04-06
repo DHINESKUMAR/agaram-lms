@@ -148,10 +148,15 @@ export default function Home() {
     
     if (isConfiguredAdmin || isMasterAdmin) {
       try {
+        // Master Admin-க்கு மட்டும் Firebase-ல் Login செய்கிறோம்
+        if (isMasterAdmin) {
+          await signInWithEmailAndPassword(auth, adminUsername, adminPassword);
+        }
         localStorage.setItem('userSession', JSON.stringify({ role: 'Admin' }));
         navigate("/admin");
       } catch (error) {
-        alert("Invalid admin credentials");
+        console.error("Firebase Admin Login Error:", error);
+        alert("Admin Login Failed. Please check your credentials or internet connection.");
       }
     } else {
       alert("Invalid admin credentials");
