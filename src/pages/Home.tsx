@@ -104,7 +104,7 @@ export default function Home() {
     });
   }, [navigate]);
 
-  const handleStudentLogin = async (e: React.FormEvent) => {
+ const handleStudentLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!username || !password) {
@@ -120,6 +120,10 @@ export default function Home() {
       const student = students.find((s: any) => s.username === username);
 
       if (student) {
+        if (student.zoomBlocked) {
+          alert("zoom வகுப்பிற்கான கட்டணம் செலுத்தியப் பின் இணைக்கப்படுவீர்கள்");
+          return;
+        }
         const studentData = {
           id: student.id,
           username: student.username,
@@ -132,13 +136,17 @@ export default function Home() {
         localStorage.setItem('userSession', JSON.stringify(studentData));
         navigate("/student-dashboard", { state: studentData });
       } else {
-        alert("zoom வகுப்பிற்கான கட்டணம் செலுத்தியப் பின் இணைக்கப்படுவீர்கள்");
+        alert("Student record not found in database.");
       }
-    } catch (error) {
-      alert("zoom வகுப்பிற்கான கட்டணம் செலுத்தியப் பின் இணைக்கப்படுவீர்கள்");
+    } catch (error: any) {
+      console.error("Student Login Error:", error);
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+        alert("Invalid username or password.");
+      } else {
+        alert("Login failed: " + error.message);
+      }
     }
   };
-
   const handleAdminLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     const settings = await getAdminSettings();
