@@ -59,12 +59,7 @@ const saveData = async (key: string, data: any) => {
         const querySnapshot = await getDocs(collection(db, key));
         const batch = writeBatch(db);
         
-        // Delete existing docs
-        querySnapshot.forEach(doc => {
-          batch.delete(doc.ref);
-        });
-        
-        // Add new docs
+       // Add or update new docs
         data.forEach(item => {
           const docRef = doc(collection(db, key), item.id || Math.random().toString());
           batch.set(docRef, item);
