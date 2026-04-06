@@ -56,22 +56,18 @@ const saveData = async (key: string, data: any) => {
   if (isFirebaseConfigured) {
     try {
       if (Array.isArray(data)) {
-        const querySnapshot = await getDocs(collection(db, key));
-        const batch = writeBatch(db);
-        
-       // Add or update new docs
-        data.forEach(item => {
+        // Use individual setDoc calls instead of batch to avoid size limits
+        const promises = data.map(item => {
           const docRef = doc(collection(db, key), item.id || Math.random().toString());
-          batch.set(docRef, item);
+          return setDoc(docRef, item);
         });
-        
-        await batch.commit();
+        await Promise.all(promises);
       } else {
         const docRef = doc(db, 'singletons', key);
         await setDoc(docRef, { data });
       }
     } catch (error) {
-      console.warn(`Firebase error saving ${key}. Saved to local storage only.`, error);
+      console.error(`Firebase error saving ${key}:`, error);
     }
   }
 };
